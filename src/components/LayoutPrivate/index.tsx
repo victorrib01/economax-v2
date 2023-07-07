@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Container from "../Container";
 import {
@@ -9,7 +9,6 @@ import {
   LeftCircleFilled,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import { useAuth } from "../../contexts/auth";
 
 type MenuItem = {
   label: string;
@@ -52,7 +51,6 @@ const items: MenuItem[] = [
 export function LayoutPrivate({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { token } = useAuth();
   const { pathname } = location;
   const backButtonActive = pathname.split("/").length > 2;
 

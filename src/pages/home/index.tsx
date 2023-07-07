@@ -102,7 +102,9 @@ export function Home() {
             style={{ width: "100%" }}
             min={0}
             step={1}
+            // @ts-ignore
             formatter={formatCurrency}
+            // @ts-ignore
             parser={(value) =>
               (value as string).replace(/[\D]/g, "").replace("R$ ", "")
             }
@@ -129,7 +131,9 @@ export function Home() {
             disabled={userCategoriesError}
             size="large"
             options={userCategories?.map((item) => ({
+              // @ts-ignore
               value: item.id,
+              // @ts-ignore
               label: item.categoria,
             }))}
           />
@@ -201,6 +205,7 @@ export function Home() {
                 </div>
               ) : (
                 lastRegisters?.map((item) => (
+                  // @ts-ignore
                   <SpendCard item={item} key={item.data} />
                 ))
               )}

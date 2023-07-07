@@ -1,6 +1,6 @@
 import React from "react";
 import { Logo } from "../../components/Logo";
-import { Form, Input, Checkbox, Button, Space, Alert } from "antd";
+import { Form, Input, Button, Space, Alert } from "antd";
 import { SubTitle, Title } from "./styles";
 import { useNavigate } from "react-router-dom";
 
@@ -8,37 +8,36 @@ export function Register() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  const [disabled, setDisabled] = React.useState(true);
-  const [loading, setLoading] = React.useState(false);
+  // const [disabled, setDisabled] = React.useState(true);
+  // const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(false);
 
   function onFieldsChange() {
-    const responseForm = form.getFieldValue();
-    const condition =
-      responseForm?.username !== undefined &&
-      responseForm?.password !== undefined;
-
-    if (condition) {
-      setDisabled(false);
-    } else {
-      if (!disabled) setDisabled(true);
-    }
+    // const responseForm = form.getFieldValue();
+    // const condition =
+    //   responseForm?.username !== undefined &&
+    //   responseForm?.password !== undefined;
+    // if (condition) {
+    //   setDisabled(false);
+    // } else {
+    //   if (!disabled) setDisabled(true);
+    // }
   }
-  function onFinishFailed(err) {
+  function onFinishFailed(err: any) {
     alert("deu ruim");
     setError(true);
     console.error(err);
-    setLoading(false);
+    // setLoading(false);
   }
 
   function onSubmit() {
-    setLoading(true);
+    // setLoading(true);
     const values = form.getFieldsValue();
 
     console.log(values);
   }
 
-  function valitadePassword(_, value) {
+  function valitadePassword(_: any, value: any) {
     const password = form.getFieldValue("password");
     console.log(value, password);
     if (value && value !== password) {

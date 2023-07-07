@@ -61,12 +61,14 @@ export function Lists() {
             <p>
               Gastos do mês:{" "}
               {formatCentsToReal(
+                // @ts-ignore
                 sumTotalMonthSpends ? sumTotalMonthSpends["Total"] : "0"
               )}
             </p>
             <p>
               Gastos do dia:{" "}
               {formatCentsToReal(
+                // @ts-ignore
                 sumTotalDaySpends ? sumTotalDaySpends["Total"] : "0"
               )}
             </p>

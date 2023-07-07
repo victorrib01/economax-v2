@@ -1,10 +1,9 @@
-import React from "react";
 import { Logo } from "../../components/Logo";
-import { Form, Input, Checkbox, Button, Space, Alert, Modal } from "antd";
+import { Form, Input, Checkbox, Button, Space, Modal } from "antd";
 import { SubTitle, Title } from "./styles";
 import { useNavigate } from "react-router-dom";
 import useSWRMutation from "swr/mutation";
-import { CredentialsOutput, endpoints } from "../../config/endpoints";
+import { endpoints } from "../../config/endpoints";
 import type { ModalStaticFunctions } from "antd/es/modal/confirm";
 import { api } from "../../utils/fetcher";
 import { useAuth } from "../../contexts/auth";
@@ -18,7 +17,7 @@ type FormValues = {
 export function Login() {
   const navigate = useNavigate();
   const { setToken, setRemember, remember } = useAuth();
-
+  // @ts-ignore
   const success = (res) => {
     // Salvar a chave res.jwt
     const { jwt } = res;
@@ -33,7 +32,7 @@ export function Login() {
     setToken(jwt); // Armazenar o JWT no contexto de autenticação
     navigate("/home");
   };
-
+  // @ts-ignore
   const error = (modal) => (error) => {
     modal.error({
       title: "Usuário ou senha inválidos",
@@ -53,7 +52,7 @@ export function Login() {
   const [form] = Form.useForm();
   const [modal, contextHolder] = Modal.useModal();
   const { trigger: triggerLogin, isMutating } = useLoginMutation(modal);
-
+  // @ts-ignore
   const onChangeRemember = (e) => {
     console.log(e.target.checked);
     setRemember(e.target.checked);

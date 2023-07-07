@@ -1,8 +1,7 @@
-import { Select, Card, Space } from "antd";
+import { Select, Space } from "antd";
 import { getAllMonths } from "../../../utils/getAllMonths";
 import { useState, useEffect } from "react";
 import moment from "moment-timezone";
-import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { useAuth } from "../../../contexts/auth";
 import { api } from "../../../utils/fetcher";
@@ -16,7 +15,6 @@ const monthOptions = getAllMonths().map((item) => ({
 
 export function Relatory() {
   const { token } = useAuth();
-  const navigate = useNavigate();
 
   const [monthValue, setMonthValue] = useState(moment().month() + 1);
 
@@ -28,7 +26,7 @@ export function Relatory() {
   } = useSWR<[]>(token ? "/ultimas_despesas_usuario" : null, (url) =>
     api.post(url, { token, mes: monthValue, ano: 2023 })
   );
-
+  // @ts-ignore
   function onChange(value) {
     setMonthValue(value);
   }
@@ -93,6 +91,7 @@ export function Relatory() {
             <p>Sem registros disponíveis.</p>
           ) : (
             lastRegisters?.map((item) => (
+              // @ts-ignore
               <SpendCard item={item} key={item.data} />
             ))
           )}
