@@ -17,6 +17,8 @@ import { Profile } from "./pages/profile";
 import { Lists } from "./pages/lists";
 import { Categories } from "./pages/categories";
 import { AddCategories } from "./pages/categories/add";
+import { SpendsByCategory } from "./pages/lists/spends_by_category";
+import { Relatory } from "./pages/lists/relatory";
 
 function App() {
   return (
@@ -33,6 +35,11 @@ function App() {
             <Route path="/categorias" element={<Categories />} />
             <Route path="/categorias/adicionar" element={<AddCategories />} />
             <Route path="/lista" element={<Lists />} />
+            <Route
+              path="/lista/gastos_por_categoria"
+              element={<SpendsByCategory />}
+            />
+            <Route path="/lista/relatorio" element={<Relatory />} />
           </Route>
         </Routes>
         <GlobalStyle />

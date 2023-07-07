@@ -1,33 +1,64 @@
 import React from "react";
 import { Logo } from "../../components/Logo";
-import { Form, Input, Checkbox, Button, Space, Alert } from "antd";
+import { Form, Input, Checkbox, Button, Space, Alert, Modal } from "antd";
 import { SubTitle, Title } from "./styles";
 import { useNavigate } from "react-router-dom";
+import useSWRMutation from "swr/mutation";
+import { CredentialsOutput, endpoints } from "../../config/endpoints";
+import type { ModalStaticFunctions } from "antd/es/modal/confirm";
+import { api } from "../../utils/fetcher";
+import { useAuth } from "../../contexts/auth";
+
+type FormValues = {
+  login: string;
+  password: string;
+  // remember: boolean
+};
 
 export function Login() {
   const navigate = useNavigate();
+  const { setToken, setRemember, remember } = useAuth();
+
+  const success = (res) => {
+    // Salvar a chave res.jwt
+    const { jwt } = res;
+
+    if (remember) {
+      localStorage.setItem("token", jwt); // Salvar no localStorage
+      sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
+    } else {
+      sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
+    }
+
+    setToken(jwt); // Armazenar o JWT no contexto de autenticação
+    navigate("/home");
+  };
+
+  const error = (modal) => (error) => {
+    modal.error({
+      title: "Usuário ou senha inválidos",
+      content:
+        "Devido à um erro de autenticação, não foi possível autorizar o seu acesso.",
+      centered: true,
+      className: "modal-button-ok",
+    });
+    return;
+  };
+
+  const useLoginMutation = (modal: Omit<ModalStaticFunctions, "warn">) =>
+    useSWRMutation(endpoints.login.url, (url, { arg }: { arg: FormValues }) =>
+      api.post(url, arg).then(success).catch(error(modal))
+    );
+
   const [form] = Form.useForm();
+  const [modal, contextHolder] = Modal.useModal();
+  const { trigger: triggerLogin, isMutating } = useLoginMutation(modal);
 
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const onChangeRemember = (e) => {
+    console.log(e.target.checked);
+    setRemember(e.target.checked);
+  };
 
-  function onFinishFailed(err) {
-    setError(true);
-    if (!err.values.username || !err.values.password) {
-      setErrorMessage("Preencha todos os campos");
-    }
-    setLoading(false);
-  }
-
-  function onSubmit() {
-    setLoading(true);
-    const values = form.getFieldsValue();
-
-    if (values.username && values.password) {
-      navigate("/home");
-    }
-  }
   return (
     <div
       style={{
@@ -38,14 +69,6 @@ export function Login() {
         height: "100%",
       }}
     >
-      {error && (
-        <Alert
-          message={errorMessage}
-          type="warning"
-          afterClose={() => setError(false)}
-          style={{ marginBottom: "32px" }}
-        />
-      )}
       <Logo />
       <Title>Login</Title>
       <SubTitle>Preencha os campos abaixo</SubTitle>
@@ -56,11 +79,10 @@ export function Login() {
         style={{ width: "100%" }}
         initialValues={{ remember: true }}
         form={form}
-        onFinish={onSubmit}
-        onFinishFailed={onFinishFailed}
+        onFinish={triggerLogin}
       >
         <Form.Item
-          name={"username"}
+          name={"usuarioBody"}
           rules={[
             {
               required: true,
@@ -71,7 +93,7 @@ export function Login() {
           <Input size="large" placeholder="Usuário" />
         </Form.Item>
         <Form.Item
-          name={"password"}
+          name={"senha"}
           rules={[
             {
               whitespace: true,
@@ -82,13 +104,13 @@ export function Login() {
           <Input.Password size="large" placeholder="Senha" />
         </Form.Item>
 
-        {/* <Form.Item
+        <Form.Item
           name="remember"
           valuePropName="checked"
           // wrapperCol={{ offset: 8, span: 16 }}
         >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item> */}
+          <Checkbox onChange={onChangeRemember}>Manter login</Checkbox>
+        </Form.Item>
 
         <Form.Item>
           <Space>
@@ -96,7 +118,7 @@ export function Login() {
               type="primary"
               htmlType="submit"
               size="large"
-              loading={loading}
+              loading={isMutating}
             >
               Login
             </Button>
@@ -107,6 +129,7 @@ export function Login() {
         </Form.Item>
       </Form>
       <p>v 2.0.0</p>
+      {contextHolder}
     </div>
   );
 }

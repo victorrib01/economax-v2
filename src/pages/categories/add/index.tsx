@@ -1,9 +1,9 @@
-import { Input, Button, Card } from "antd";
-import React, { useEffect, useState } from "react";
+import { Input, Button, Popconfirm } from "antd";
+import { useEffect, useState, Fragment } from "react";
 import Loader from "../../../components/Loader";
-import { CloseOutlined } from "@ant-design/icons";
-
-interface Category {
+import "./styles.css";
+import { CategoryCard } from "../../../components/CategoryCard";
+export interface Category {
   id: number;
   name: string;
   registered?: boolean;
@@ -12,61 +12,34 @@ interface Category {
 export function AddCategories() {
   const [loading, setLoading] = useState<boolean>(true);
   const [input, setInput] = useState<string>("");
-  const [allCategories, setAllCategories] = useState<Category[]>([
-    {
-      id: 1,
-      name: "category 1",
-    },
-    {
-      id: 2,
-      name: "category 2",
-    },
-    {
-      id: 3,
-      name: "category 3",
-    },
-    {
-      id: 4,
-      name: "category 4",
-    },
-    {
-      id: 5,
-      name: "category 5",
-    },
-  ]);
-  const [registeredCategories, setRegisteredCategories] = useState<Category[]>([
-    {
-      id: 3,
-      name: "category 3",
-    },
-    {
-      id: 5,
-      name: "category 5",
-    },
-  ]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [registeredCategories, setRegisteredCategories] = useState<Category[]>(
+    []
+  );
   const [selectedItems, setSelectedItems] = useState<Category[]>([]);
 
   // Função para alternar a seleção de um item
-  const toggleItem = (category) => {
+  const toggleItem = (category: Category) => {
     // Encontrar o índice do item selecionado na lista de seleção
     const itemIndex = selectedItems.findIndex(
       (item) => item.id === category.id
     );
+
     // Se o item estiver selecionado (índice diferente de -1)
     if (itemIndex !== -1) {
       // Criar uma cópia da lista de seleção atual
       const updatedItems = [...selectedItems];
       // Remover o item da lista de seleção
-      setSelectedItems(updatedItems);
-      // Atualizar a lista de seleção
       updatedItems.splice(itemIndex, 1);
+      // Atualizar a lista de seleção
+      setSelectedItems(updatedItems);
     }
     // Caso contrário, se o item não estiver selecionado
     else {
       // Encontrar o objeto do item selecionado na lista de categorias filtradas
-      const newItem = filteredCategories.find((item) => {
-        return item.id === category.id;
-      });
+      const newItem = filteredCategories.find(
+        (item) => item.id === category.id
+      );
 
       // Se o objeto do item selecionado existir
       if (newItem) {
@@ -128,6 +101,15 @@ export function AddCategories() {
     return a.registered ? 1 : -1;
   }
 
+  useEffect(() => {
+    const categories = Array.from({ length: 100 }, (_, index) => ({
+      id: index + 1,
+      name: `Category ${index + 1}`,
+    }));
+
+    setAllCategories(categories);
+  }, []);
+
   return (
     <div
       style={{
@@ -155,6 +137,7 @@ export function AddCategories() {
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
+            height: "45%",
           }}
         >
           <h3>Pesquisar categorias criadas</h3>
@@ -171,15 +154,9 @@ export function AddCategories() {
             {loading ? (
               <Loader />
             ) : filteredCategories.length === 0 ? (
-              <div>
-                <p>Nenhuma categoria - {input}</p>
-                <p>Criar categoria</p>
-              </div>
+              <CreateCategory input={input} />
             ) : (
               filteredCategories.map((item) => {
-                const isSelected = selectedItems.some(
-                  (selectedItem) => selectedItem.id === item.id
-                );
                 const categoryExists = allCategories.some(
                   (category) => category.name === input
                 );
@@ -193,26 +170,21 @@ export function AddCategories() {
                   )
                 ) {
                   return (
-                    <React.Fragment key={item.id}>
+                    <Fragment key={item.id}>
                       {filteredCategories.indexOf(item) === 0 && (
-                        <div>
-                          <p>Nenhuma categoria - {input}</p>
-                          <p>Criar categoria</p>
-                        </div>
+                        <CreateCategory input={input} />
                       )}
-                      <CategoryCard
-                        item={item}
-                        isSelected={isSelected}
-                        toggleItem={toggleItem}
-                      />
-                    </React.Fragment>
+                      <CategoryCard item={item} />
+                    </Fragment>
                   );
                 }
-
                 return (
                   <CategoryCard
+                    key={item.id}
                     item={item}
-                    isSelected={isSelected}
+                    isSelected={selectedItems.some(
+                      (selectedItem) => selectedItem.id === item.id
+                    )}
                     toggleItem={toggleItem}
                   />
                 );
@@ -226,13 +198,18 @@ export function AddCategories() {
             display: "flex",
             flexDirection: "column",
             width: "100%",
+            height: "45%",
           }}
         >
-          <h4>Categorias selcionadas para adicionar a sua lista:</h4>
+          <h4>Categorias selecionadas para adicionar à sua lista:</h4>
 
           <div
             id="lista"
-            className="flex flex-col my-2 flex-grow overflow-y-auto h-[80%]"
+            style={{
+              overflowY: "auto",
+              flexGrow: 1,
+              width: "100%",
+            }}
           >
             {loading ? (
               <Loader />
@@ -240,18 +217,40 @@ export function AddCategories() {
               <div>Nenhuma categoria selecionada</div>
             ) : (
               selectedItems.map((item) => (
-                <CategoryCard item={item} toggleItem={toggleItem} />
+                <CategoryCard
+                  key={item.id}
+                  item={item}
+                  toggleItem={toggleItem}
+                />
               ))
             )}
           </div>
         </div>
       </div>
+      <Popconfirm
+        title="Desselecionar toda(s) a(s) categoria(s)"
+        description="Tem certeza que deseja desselecionar toda(s) a(s) categoria(s)"
+        onConfirm={() => setSelectedItems([])}
+        onCancel={() => {}}
+        okText="Sim"
+        cancelText="Não"
+      >
+        <Button
+          type="primary"
+          danger
+          size="large"
+          disabled={selectedItems.length < 0}
+          block
+        >
+          {`Desselecionar toda(s) a(s) categoria(s)`}
+        </Button>
+      </Popconfirm>
       <Button
         type="primary"
         htmlType="submit"
         size="large"
         loading={loading}
-        style={{ width: "100%" }}
+        block
       >
         {`Cadastrar ${selectedItems.length} nova(s) categoria(s)`}
       </Button>
@@ -259,59 +258,11 @@ export function AddCategories() {
   );
 }
 
-function CategoryCard({ item, isSelected = false, toggleItem }) {
-  if (item.registered) {
-    return (
-      <Card
-        key={item}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-      >
-        <div
-          style={
-            isSelected
-              ? { color: "blue" }
-              : { color: "black" } ?? {
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }
-          }
-        >
-          Cadastrado - {item.name}
-        </div>
-        {isSelected && <CloseOutlined />}
-      </Card>
-    );
-  }
+function CreateCategory({ input }: { input: string }) {
   return (
-    <Card
-      key={item}
-      style={{
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-      }}
-      onClick={() => toggleItem(item)}
-    >
-      <div
-        style={
-          isSelected
-            ? { color: "blue" }
-            : { color: "black" } ?? {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }
-        }
-      >
-        {item.name}
-      </div>
-      {isSelected && <CloseOutlined />}
-    </Card>
+    <div>
+      <p>Nenhuma categoria - {input}</p>
+      <p>Criar categoria</p>
+    </div>
   );
 }

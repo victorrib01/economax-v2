@@ -2,6 +2,7 @@ import { Input, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { useNavigate } from "react-router-dom";
+import { CategoryCard } from "../../components/CategoryCard";
 
 interface Category {
   id: number;
@@ -78,7 +79,14 @@ export function Categories() {
     }
     return a.registered ? 1 : -1;
   }
+  useEffect(() => {
+    const categories = Array.from({ length: 100 }, (_, index) => ({
+      id: index + 1,
+      name: `Category ${index + 1}`,
+    }));
 
+    setAllCategories(categories);
+  }, []);
   return (
     <div
       style={{
@@ -97,21 +105,26 @@ export function Categories() {
           alignItems: "center",
           flexDirection: "column",
           width: "100%",
+          height: "80%",
         }}
       >
-        <div
+        <h3
           style={{
             display: "flex",
             width: "100%",
           }}
         >
-          <h3>Categorias cadastradas</h3>
-        </div>
+          Categorias cadastradas
+        </h3>
         <Input onChange={(e) => setInput(e.target.value)} value={input} />
 
         <div
           id="lista"
-          className="flex flex-col my-2 flex-grow overflow-y-auto h-[80%]"
+          style={{
+            width: "100%",
+            overflowY: "auto",
+            flexGrow: 1,
+          }}
         >
           {loading ? (
             <Loader />
@@ -119,9 +132,6 @@ export function Categories() {
             <div>Nenhuma categoria - {input}</div>
           ) : (
             filteredCategories.map((item) => {
-              //   const isSelected = selectedItems.some(
-              //     (selectedItem) => selectedItem.id === item.id
-              //   );
               const categoryExists = allCategories.some(
                 (category) => category.name === input
               );
@@ -138,12 +148,12 @@ export function Categories() {
                   <React.Fragment key={item.id}>
                     {filteredCategories.indexOf(item) === 0 &&
                       `Nenhuma categoria - ${input}`}
-                    <p>{item.name}</p>
+                    <CategoryCard item={item} />
                   </React.Fragment>
                 );
               }
 
-              return <p key={item.id}>{item.name}</p>;
+              return <CategoryCard item={item} />;
             })
           )}
         </div>
@@ -153,7 +163,7 @@ export function Categories() {
         htmlType="submit"
         size="large"
         loading={loading}
-        style={{ width: "100%" }}
+        block
         onClick={() => navigate("/categorias/adicionar")}
       >
         Cadastrar nova categoria

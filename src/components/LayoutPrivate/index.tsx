@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Container from "../Container";
 import {
@@ -6,8 +6,10 @@ import {
   MailOutlined,
   SettingOutlined,
   UnorderedListOutlined,
+  LeftCircleFilled,
 } from "@ant-design/icons";
 import { Menu } from "antd";
+import { useAuth } from "../../contexts/auth";
 
 type MenuItem = {
   label: string;
@@ -50,7 +52,9 @@ const items: MenuItem[] = [
 export function LayoutPrivate({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const { pathname } = location;
+  const backButtonActive = pathname.split("/").length > 2;
 
   const getMenuSelectedKey = (pathname: string) => {
     for (const item of items) {
@@ -71,7 +75,12 @@ export function LayoutPrivate({ children }: LayoutProps) {
     }
   };
 
+  function goBack() {
+    navigate(-1);
+  }
+
   const menuHeight = 46; // Altura do menu em pixels
+  const backButtonHeight = 20; // Altura do menu em pixels
 
   const mainContentStyle = {
     height: `calc(100% - ${menuHeight}px)`,
@@ -81,9 +90,44 @@ export function LayoutPrivate({ children }: LayoutProps) {
     justifyContent: "center",
   };
 
+  const mainContentWithBackButtonStyle = {
+    ...mainContentStyle,
+    height: `calc(100% - ${menuHeight}px - ${backButtonHeight + 16.5}px)`,
+  };
+
   return (
     <Container>
-      <div style={mainContentStyle}>{children ?? <Outlet />}</div>
+      {backButtonActive && (
+        <div
+          style={{
+            cursor: "pointer",
+            width: "100%",
+            maxHeight: backButtonHeight + 16.5,
+
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            // justifyContent: "center",
+
+            padding: 8,
+          }}
+          onClick={() => goBack()}
+        >
+          <LeftCircleFilled
+            style={{
+              fontSize: backButtonHeight,
+            }}
+          />
+          <p style={{ marginLeft: "1rem" }}>Voltar</p>
+        </div>
+      )}
+      <div
+        style={
+          backButtonActive ? mainContentWithBackButtonStyle : mainContentStyle
+        }
+      >
+        {children ?? <Outlet />}
+      </div>
       <Menu
         style={{
           width: "100%",

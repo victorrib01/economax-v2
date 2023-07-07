@@ -1,8 +1,17 @@
 import { Card, Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/auth";
 
 export function Profile() {
   const navigate = useNavigate();
+  const { setToken } = useAuth();
+
+  const signOut = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <div
@@ -21,7 +30,7 @@ export function Profile() {
       <Button
         type="primary"
         style={{ width: "100%" }}
-        onClick={() => navigate("/")}
+        onClick={() => signOut()}
       >
         Sair
       </Button>

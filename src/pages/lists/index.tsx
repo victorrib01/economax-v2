@@ -1,8 +1,30 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Space, Card } from "antd";
+import useSWR from "swr";
+import { api } from "../../utils/fetcher";
+import { useAuth } from "../../contexts/auth";
+import { formatCentsToReal } from "../../utils/formatCentsToReal";
+import Loader from "../../components/Loader";
 
 export function Lists() {
   const navigate = useNavigate();
+  const { token } = useAuth();
+
+  const {
+    data: sumTotalDaySpends,
+    error: sumTotalDaySpendsError,
+    isLoading: sumTotalDaySpendsLoading,
+  } = useSWR(token ? "/soma_total_gastos_por_usuario_por_dia" : null, (url) =>
+    api.post(url, { token })
+  );
+
+  const {
+    data: sumTotalMonthSpends,
+    error: sumTotalMonthSpendsError,
+    isLoading: sumTotalMonthSpendsLoading,
+  } = useSWR(token ? "/soma_total_gastos_por_usuario_por_dia" : null, (url) =>
+    api.post(url, { token })
+  );
 
   return (
     <div
@@ -30,12 +52,34 @@ export function Lists() {
           justifyContent: "center",
         }}
       >
-        <p>Gastos do mês: R$ 0,00</p>
-        <p>Gastos do dia: R$ 0,00</p>
+        {sumTotalMonthSpendsLoading || sumTotalDaySpendsLoading ? (
+          <Loader />
+        ) : sumTotalDaySpendsError || sumTotalMonthSpendsError ? (
+          <div>Erro tente novamente mais tarde</div>
+        ) : (
+          <>
+            <p>
+              Gastos do mês:{" "}
+              {formatCentsToReal(
+                sumTotalMonthSpends ? sumTotalMonthSpends["Total"] : "0"
+              )}
+            </p>
+            <p>
+              Gastos do dia:{" "}
+              {formatCentsToReal(
+                sumTotalDaySpends ? sumTotalDaySpends["Total"] : "0"
+              )}
+            </p>
+          </>
+        )}
       </Card>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <Button block>Gastos por categoria</Button>
-        <Button block>Relatorio</Button>
+        <Button block onClick={() => navigate("/lista/gastos_por_categoria")}>
+          Gastos por categoria
+        </Button>
+        <Button block onClick={() => navigate("/lista/relatorio")}>
+          Relatorio
+        </Button>
       </Space>
     </div>
   );
