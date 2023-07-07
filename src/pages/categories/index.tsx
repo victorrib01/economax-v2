@@ -1,4 +1,4 @@
-import { Input, Button } from "antd";
+import { Input, Button, Result } from "antd";
 import React, { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { useNavigate } from "react-router-dom";
@@ -98,7 +98,7 @@ export function Categories() {
         width: "90%",
       }}
     >
-      <div
+      {/* <div
         style={{
           display: "flex",
           justifyContent: "center",
@@ -167,7 +167,13 @@ export function Categories() {
         onClick={() => navigate("/categorias/adicionar")}
       >
         Cadastrar nova categoria
-      </Button>
+      </Button> */}
+      <Result
+        status="error"
+        title="Pagina sob construção..."
+        subTitle="Desculpe, mas a pagina de categorias esta sendo construida."
+        // extra={<Button type="primary">Back Home</Button>}
+      />
     </div>
   );
 }
