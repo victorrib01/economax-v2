@@ -1,45 +1,49 @@
 import React from "react";
 import { Logo } from "../../components/Logo";
-import { Form, Input, Button, Space, Alert } from "antd";
+import { Form, Input, Button, Space, Alert, Modal } from "antd";
 import { SubTitle, Title } from "./styles";
+import useSWRMutation from "swr/mutation";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../utils/fetcher";
+import { useAuth } from "../../contexts/auth";
 
 export function Register() {
   const navigate = useNavigate();
+  const { setToken } = useAuth();
   const [form] = Form.useForm();
 
-  // const [disabled, setDisabled] = React.useState(true);
-  // const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(false);
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  // @ts-ignore
+  const success = (res) => {
+    // Salvar a chave res.jwt
+    const { jwt } = res;
 
-  function onFieldsChange() {
-    // const responseForm = form.getFieldValue();
-    // const condition =
-    //   responseForm?.username !== undefined &&
-    //   responseForm?.password !== undefined;
-    // if (condition) {
-    //   setDisabled(false);
-    // } else {
-    //   if (!disabled) setDisabled(true);
-    // }
-  }
-  function onFinishFailed(err: any) {
-    alert("deu ruim");
-    setError(true);
-    console.error(err);
-    // setLoading(false);
-  }
+    sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
 
-  function onSubmit() {
-    // setLoading(true);
-    const values = form.getFieldsValue();
+    setToken(jwt); // Armazenar o JWT no contexto de autenticação
+    navigate("/home");
+  };
+  // @ts-ignore
+  const error = (modal) => (error) => {
+    modal.error({
+      title: "Usuário ou senha inválidos",
+      content:
+        "Devido à um erro de autenticação, não foi possível autorizar o seu acesso.",
+      centered: true,
+      className: "modal-button-ok",
+    });
+    return;
+  };
 
-    console.log(values);
-  }
+  const useRegisterMutation = (modal) =>
+    useSWRMutation("/cadastro", (url, { arg }) =>
+      api.post(url, arg).then(success).catch(error(modal))
+    );
+  const [modal, contextHolder] = Modal.useModal();
+  const { trigger: triggerRegister, isMutating } = useRegisterMutation(modal);
 
   function valitadePassword(_: any, value: any) {
-    const password = form.getFieldValue("password");
-    console.log(value, password);
+    const password = form.getFieldValue("senha");
     if (value && value !== password) {
       return Promise.reject("As senhas não correspondem");
     }
@@ -56,11 +60,11 @@ export function Register() {
         height: "100%",
       }}
     >
-      {error && (
+      {errorAlert && (
         <Alert
           message="Erro"
           type="warning"
-          afterClose={() => setError(false)}
+          afterClose={() => setErrorAlert(false)}
           style={{ marginBottom: "32px" }}
         />
       )}
@@ -74,12 +78,10 @@ export function Register() {
         style={{ width: "100%" }}
         initialValues={{ remember: true }}
         form={form}
-        onFinish={onSubmit}
-        onFieldsChange={onFieldsChange}
-        onFinishFailed={onFinishFailed}
+        onFinish={triggerRegister}
       >
         <Form.Item
-          name={"username"}
+          name={"usuarioBody"}
           rules={[
             {
               required: true,
@@ -90,7 +92,7 @@ export function Register() {
           <Input size="large" placeholder="Usuário" />
         </Form.Item>
         <Form.Item
-          name={"password"}
+          name={"senha"}
           rules={[
             {
               whitespace: true,
@@ -115,7 +117,12 @@ export function Register() {
 
         <Form.Item>
           <Space>
-            <Button type="primary" htmlType="submit" size="large">
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              loading={isMutating}
+            >
               Registrar
             </Button>
             <Button size="large" onClick={() => navigate("/")}>

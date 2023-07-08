@@ -7,6 +7,7 @@ import { endpoints } from "../../config/endpoints";
 import type { ModalStaticFunctions } from "antd/es/modal/confirm";
 import { api } from "../../utils/fetcher";
 import { useAuth } from "../../contexts/auth";
+import { LocalStorageItem, setLocalStorage } from "../../utils/localStorage";
 
 type FormValues = {
   login: string;
@@ -21,12 +22,24 @@ export function Login() {
   const success = (res) => {
     // Salvar a chave res.jwt
     const { jwt } = res;
+    const values = form.getFieldsValue();
 
-    if (remember) {
-      localStorage.setItem("token", jwt); // Salvar no localStorage
-      sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
-    } else {
-      sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
+    if (res["Message"] !== "Usuário autenticado com sucesso!") {
+      modal.error({
+        title: "Usuário ou senha inválidos",
+        content:
+          "Devido à um erro de autenticação, não foi possível autorizar o seu acesso.",
+        centered: true,
+        className: "modal-button-ok",
+      });
+      return;
+    } else if (values.remember) {
+      const localStorageObject: LocalStorageItem = {
+        token: jwt,
+        name: values.usuarioBody,
+      };
+
+      setLocalStorage(localStorageObject);
     }
 
     setToken(jwt); // Armazenar o JWT no contexto de autenticação

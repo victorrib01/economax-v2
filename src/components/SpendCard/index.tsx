@@ -24,7 +24,7 @@ export function SpendCard({ item }: SpendCardProps) {
         >
           <p>Categoria: {item.categoria}</p>
           <p>Valor: {formatCentsToReal(item.valor)}</p>
-          <p>Descrição: {item.descricao}</p>
+          <p>Descrição: {item.descricao || "Sem descrição"}</p>
         </Card>
       </Col>
     </Row>

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getLocalStorage } from "../utils/localStorage";
 
 type AuthContextData = {
+  username: string | null;
   token: string | null;
   remember: boolean;
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
@@ -15,24 +17,22 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC<AuthContextProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [remember, setRemember] = useState<boolean>(false);
 
   useEffect(() => {
-    const tokenFromSessionStorage = sessionStorage.getItem("token");
+    const tokenFromLocalStorage = getLocalStorage();
 
-    if (tokenFromSessionStorage) {
-      setToken(tokenFromSessionStorage);
-    } else {
-      const tokenFromLocalStorage = localStorage.getItem("token");
-
-      if (tokenFromLocalStorage) {
-        setToken(tokenFromLocalStorage);
-      }
+    if (tokenFromLocalStorage) {
+      setToken(tokenFromLocalStorage.token);
+      setUsername(tokenFromLocalStorage.name);
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, remember, setToken, setRemember }}>
+    <AuthContext.Provider
+      value={{ username, token, setToken, remember, setRemember }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -41,6 +41,6 @@ export const AuthProvider: React.FC<AuthContextProps> = ({ children }) => {
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  const { token, remember, setToken, setRemember } = context;
-  return { token, remember, setToken, setRemember };
+  const { username, token, remember, setToken, setRemember } = context;
+  return { username, token, remember, setToken, setRemember };
 }

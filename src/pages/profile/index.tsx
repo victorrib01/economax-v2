@@ -1,6 +1,7 @@
 import { Card, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/auth";
+import { deleteLocalStorage, getLocalStorage } from "../../utils/localStorage";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -8,8 +9,7 @@ export function Profile() {
 
   const signOut = () => {
     setToken(null);
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
+    deleteLocalStorage();
     navigate("/");
   };
 
@@ -25,7 +25,7 @@ export function Profile() {
       }}
     >
       <Card style={{ width: "100%" }}>
-        <p>Usuário: Teste</p>
+        <p>Usuário: {getLocalStorage().name}</p>
       </Card>
       <Button
         type="primary"
