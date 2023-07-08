@@ -1,11 +1,14 @@
-import { Input, Button, Popconfirm, Result } from "antd";
-import { useEffect, useState, Fragment } from "react";
-import Loader from "../../../components/Loader";
+import {
+  // Input, Button, Popconfirm,
+  Result,
+} from "antd";
+// import { useEffect, useState, Fragment } from "react";
+// import Loader from "../../../components/Loader";
 import "./styles.css";
-import useSWR from "swr";
-import { CategoryCard } from "../../../components/CategoryCard";
-import { useAuth } from "../../../contexts/auth";
-import { api } from "../../../utils/fetcher";
+// import useSWR from "swr";
+// import { CategoryCard } from "../../../components/CategoryCard";
+// import { useAuth } from "../../../contexts/auth";
+// import { api } from "../../../utils/fetcher";
 export interface Category {
   id: number;
   name: string;
@@ -13,53 +16,52 @@ export interface Category {
 }
 
 export function AddCategories() {
-  const { token } = useAuth();
-  const [input, setInput] = useState<string>("");
+  // const { token } = useAuth();
+  // const [input, setInput] = useState<string>("");
 
-  const [selectedItems, setSelectedItems] = useState<Category[]>([]);
+  // const [selectedItems, setSelectedItems] = useState<Category[]>([]);
 
-  const { data: allCategories, isLoading: loading } = useSWR<
-    { id: number; categoria: string }[]
-  >(token ? "/busca_categorias_despesas_geral_usuario" : null, (url) =>
-    api.post(url, { token })
-  );
-  const { data: registeredCategories, isLoading: registeredCategoriesLoading } =
-    useSWR<any[]>("/categorias_despesas_geral", (url) => api.get(url));
-  console.log("registeredCategories", registeredCategories);
-  console.log("allCategories", allCategories);
+  // const { data: allCategories, isLoading: loading } = useSWR<
+  //   { id: number; categoria: string }[]
+  // >(token ? "/busca_categorias_despesas_geral_usuario" : null, (url) =>
+  //   api.post(url, { token })
+  // );
+  // const { data: registeredCategories, isLoading: registeredCategoriesLoading } =
+  //   useSWR<any[]>("/categorias_despesas_geral", (url) => api.get(url));
+  // console.log("registeredCategories", registeredCategories);
+  // console.log("allCategories", allCategories);
 
   // Função para alternar a seleção de um item
-  const toggleItem = (category: Category) => {
-    // Encontrar o índice do item selecionado na lista de seleção
-    const itemIndex = selectedItems.findIndex(
-      (item) => item.id === category.id
-    );
+  // const toggleItem = (category: Category) => {
+  //   // Encontrar o índice do item selecionado na lista de seleção
+  //   const itemIndex = selectedItems.findIndex(
+  //     (item) => item.id === category.id
+  //   );
 
-    // Se o item estiver selecionado (índice diferente de -1)
-    if (itemIndex !== -1) {
-      // Criar uma cópia da lista de seleção atual
-      const updatedItems = [...selectedItems];
-      // Remover o item da lista de seleção
-      updatedItems.splice(itemIndex, 1);
-      // Atualizar a lista de seleção
-      setSelectedItems(updatedItems);
-    }
-    // Caso contrário, se o item não estiver selecionado
-    else {
-      // Encontrar o objeto do item selecionado na lista de categorias filtradas
-      const newItem = filteredCategories.find(
-        (item) => item.id === category.id
-      );
+  //   // Se o item estiver selecionado (índice diferente de -1)
+  //   if (itemIndex !== -1) {
+  //     // Criar uma cópia da lista de seleção atual
+  //     const updatedItems = [...selectedItems];
+  //     // Remover o item da lista de seleção
+  //     updatedItems.splice(itemIndex, 1);
+  //     // Atualizar a lista de seleção
+  //     setSelectedItems(updatedItems);
+  //   }
+  //   // Caso contrário, se o item não estiver selecionado
+  //   else {
+  //     // Encontrar o objeto do item selecionado na lista de categorias filtradas
+  //     // const newItem = filteredCategories?.find(
+  //     //   (item: any) => item.id === category.id
+  //     // );
+  //     // Se o objeto do item selecionado existir
+  //     // if (newItem) {
+  //     //   // Adicionar o item à lista de seleção
+  //     //   setSelectedItems([...selectedItems, newItem]);
+  //     // }
+  //   }
 
-      // Se o objeto do item selecionado existir
-      if (newItem) {
-        // Adicionar o item à lista de seleção
-        setSelectedItems([...selectedItems, newItem]);
-      }
-    }
-
-    setInput("");
-  };
+  //   setInput("");
+  // };
 
   // const filteredCategories = allCategories.filter(filterCategory);
 
@@ -242,11 +244,11 @@ export function AddCategories() {
 //     {`Cadastrar ${selectedItems.length} nova(s) categoria(s)`}
 //   </Button>
 // </div>
-function CreateCategory({ input }: { input: string }) {
-  return (
-    <div>
-      <p>Nenhuma categoria - {input}</p>
-      <p>Criar categoria</p>
-    </div>
-  );
-}
+// function CreateCategory({ input }: { input: string }) {
+//   return (
+//     <div>
+//       <p>Nenhuma categoria - {input}</p>
+//       <p>Criar categoria</p>
+//     </div>
+//   );
+// }

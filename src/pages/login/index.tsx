@@ -17,7 +17,7 @@ type FormValues = {
 
 export function Login() {
   const navigate = useNavigate();
-  const { setToken, setRemember, remember } = useAuth();
+  const { setToken, setRemember } = useAuth();
   // @ts-ignore
   const success = (res) => {
     // Salvar a chave res.jwt

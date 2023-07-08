@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { Input, Button, Result } from "antd";
+import { Input, Button } from "antd";
 import React, { useState } from "react";
 import Loader from "../../components/Loader";
 import { useNavigate } from "react-router-dom";
@@ -92,7 +92,7 @@ export function Categories() {
             <div>Nenhuma categoria - {input}</div>
           ) : (
             filteredCategories?.map((item) => {
-              const categoryExists = formattedCategories.some(
+              const categoryExists = formattedCategories?.some(
                 (category) => category.name === input
               );
               const trimmedInput = input.trim();

@@ -35,11 +35,11 @@ export function Register() {
     return;
   };
 
-  const useRegisterMutation = (modal) =>
+  const useRegisterMutation = (modal: any) =>
     useSWRMutation("/cadastro", (url, { arg }) =>
       api.post(url, arg).then(success).catch(error(modal))
     );
-  const [modal, contextHolder] = Modal.useModal();
+  const [modal] = Modal.useModal();
   const { trigger: triggerRegister, isMutating } = useRegisterMutation(modal);
 
   function valitadePassword(_: any, value: any) {
