@@ -5,6 +5,7 @@ import { api } from "../../utils/fetcher";
 import { useAuth } from "../../contexts/auth";
 import { formatCentsToReal } from "../../utils/formatCentsToReal";
 import Loader from "../../components/Loader";
+import moment from "moment";
 
 export function Lists() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function Lists() {
     error: sumTotalMonthSpendsError,
     isLoading: sumTotalMonthSpendsLoading,
   } = useSWR(token ? "/soma_total_gastos_por_usuario_mes" : null, (url) =>
-    api.post(url, { token })
+    api.post(url, { token, mes: moment().month() + 1, ano: 2023 })
   );
 
   return (
