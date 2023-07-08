@@ -1,4 +1,4 @@
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+// import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Card, Col, Row } from "antd";
 import { formatCentsToReal } from "../../utils/formatCentsToReal";
 interface SpendCardProps {
