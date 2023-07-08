@@ -1,45 +1,56 @@
-import React from "react";
 import { Logo } from "../../components/Logo";
-import { Form, Input, Button, Space, Alert, Modal } from "antd";
+import { Form, Input, Button, Space, Modal } from "antd";
 import { SubTitle, Title } from "./styles";
 import useSWRMutation from "swr/mutation";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../utils/fetcher";
 import { useAuth } from "../../contexts/auth";
+import { LocalStorageItem, setLocalStorage } from "../../utils/localStorage";
+
+interface RegisterResponse {
+  Message: string;
+  jwt?: string;
+}
 
 export function Register() {
   const navigate = useNavigate();
   const { setToken } = useAuth();
   const [form] = Form.useForm();
 
-  const [errorAlert, setErrorAlert] = React.useState(false);
-  // @ts-ignore
-  const success = (res) => {
-    // Salvar a chave res.jwt
+  const success = (res: RegisterResponse) => {
     const { jwt } = res;
+    const values = form.getFieldsValue();
 
-    sessionStorage.setItem("token", jwt); // Salvar no sessionStorage
+    if (res["Message"] === "Usuário já existe!") {
+      modal.error({
+        title: res["Message"],
+        content:
+          "Devido à um erro de registro, não foi possível autorizar o seu cadastro.",
+        centered: true,
+        className: "modal-button-ok",
+      });
+      return;
+    } else {
+      const localStorageObject: LocalStorageItem = {
+        // @ts-ignore
+        token: jwt,
+        name: values.usuarioBody,
+      };
 
+      setLocalStorage(localStorageObject);
+    }
+    // @ts-ignore
     setToken(jwt); // Armazenar o JWT no contexto de autenticação
     navigate("/home");
   };
-  // @ts-ignore
-  const error = (modal) => (error) => {
-    modal.error({
-      title: "Usuário ou senha inválidos",
-      content:
-        "Devido à um erro de autenticação, não foi possível autorizar o seu acesso.",
-      centered: true,
-      className: "modal-button-ok",
-    });
-    return;
-  };
 
-  const useRegisterMutation = (modal: any) =>
+  const useRegisterMutation = () =>
     useSWRMutation("/cadastro", (url, { arg }) =>
-      api.post(url, arg).then(success).catch(error(modal))
+      // @ts-ignore
+      api.post(url, arg).then((res) => success(res))
     );
-  const [modal] = Modal.useModal();
+  const [modal, contextHolder] = Modal.useModal();
+  //@ts-ignore
   const { trigger: triggerRegister, isMutating } = useRegisterMutation(modal);
 
   function valitadePassword(_: any, value: any) {
@@ -60,14 +71,6 @@ export function Register() {
         height: "100%",
       }}
     >
-      {errorAlert && (
-        <Alert
-          message="Erro"
-          type="warning"
-          afterClose={() => setErrorAlert(false)}
-          style={{ marginBottom: "32px" }}
-        />
-      )}
       <Logo />
       <Title>Registre-se</Title>
       <SubTitle>Preencha os campos abaixo</SubTitle>
@@ -132,6 +135,7 @@ export function Register() {
         </Form.Item>
       </Form>
       <p>v 2.0.0</p>
+      {contextHolder}
     </div>
   );
 }
