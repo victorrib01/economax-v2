@@ -22,7 +22,7 @@ export function Lists() {
     data: sumTotalMonthSpends,
     error: sumTotalMonthSpendsError,
     isLoading: sumTotalMonthSpendsLoading,
-  } = useSWR(token ? "/soma_total_gastos_por_usuario_por_dia" : null, (url) =>
+  } = useSWR(token ? "/soma_total_gastos_por_usuario_mes" : null, (url) =>
     api.post(url, { token })
   );
 
