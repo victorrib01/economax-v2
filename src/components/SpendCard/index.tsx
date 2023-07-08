@@ -17,10 +17,12 @@ export function SpendCard({ item }: SpendCardProps) {
         <Card
           title={item.data}
           style={{ width: "100%" }}
-          actions={[
-            <DeleteOutlined key="delete" />,
-            <EditOutlined key="edit" />,
-          ]}
+          actions={
+            [
+              // <DeleteOutlined key="delete" />,
+              // <EditOutlined key="edit" />,
+            ]
+          }
         >
           <p>Categoria: {item.categoria}</p>
           <p>Valor: {formatCentsToReal(item.valor)}</p>
