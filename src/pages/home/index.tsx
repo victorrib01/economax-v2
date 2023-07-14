@@ -37,47 +37,38 @@ export function Home() {
     (url) => api.post(url, { token })
   );
 
-  const {
-    trigger: registerSpend,
-    data: registerSpendResponse,
-    error: registerSpendError,
-    isMutating: registerSpendLoading,
-  } = useSWRMutation(token ? "/cadastro_gastos_usuario" : null, async (url) => {
-    const values = form.getFieldsValue();
+  const { trigger: registerSpend, isMutating: registerSpendLoading } =
+    useSWRMutation(token ? "/cadastro_gastos_usuario" : null, async (url) => {
+      const values = form.getFieldsValue();
 
-    await api.post(url, {
-      token,
-      gastos: [
-        {
-          id_categoria: values.category,
-          valor: `${convertToCents(String(values.value))}`,
-          descricao: values.description,
-        },
-      ],
+      await api.post(url, {
+        token,
+        gastos: [
+          {
+            id_categoria: values.category,
+            valor: `${convertToCents(String(values.value))}`,
+            descricao: values.description || "",
+          },
+        ],
+      });
+
+      await lastRegistersFetch();
     });
 
-    await lastRegistersFetch();
-  });
-
-  console.log("registerSpendResponse", registerSpendResponse);
-  console.log("registerSpendError", registerSpendError);
-  console.log("registerSpendLoading", registerSpendLoading);
-
-  const formatCurrency = (value: number) => {
-    const integerPart = Math.floor(value / 100);
-    const decimalPart = value % 100;
-
-    let formattedValue = `R$ ${integerPart},`;
-
-    if (decimalPart < 10) {
-      formattedValue += `0${decimalPart}`;
-    } else {
-      formattedValue += decimalPart;
-    }
-
-    return formattedValue;
+  const formatValue = (value: string): string => {
+    const sanitizedValue = value.replace(/[^0-9]/g, "");
+    const floatValue = parseFloat(sanitizedValue) / 100;
+    return floatValue.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const inputValue = e.target.value;
+    const formatted = formatValue(inputValue);
+    form.setFieldsValue({ value: `R$ ${formatted}` });
+  };
   return (
     <div
       style={{
@@ -92,22 +83,19 @@ export function Home() {
       <Form
         name="login"
         style={{ width: "100%" }}
-        initialValues={{ value: 0.0 }}
+        initialValues={{ value: "R$ 0,00" }}
         form={form}
         onFinish={registerSpend}
       >
         <Form.Item name="value">
-          <InputNumber
+          <Input
             size="large"
             style={{ width: "100%" }}
             min={0}
             step={1}
-            // @ts-ignore
-            formatter={formatCurrency}
-            // @ts-ignore
-            parser={(value) =>
-              (value as string).replace(/[\D]/g, "").replace("R$ ", "")
-            }
+            // type="tel"
+            // pattern="[0-9]*"
+            onChange={handleInputChange}
           />
         </Form.Item>
         <Form.Item
