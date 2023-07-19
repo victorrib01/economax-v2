@@ -102,7 +102,7 @@ export function Login() {
             },
           ]}
         >
-          <Input size="large" placeholder="Usuário" />
+          <Input size="large" placeholder="Usuário" autoCapitalize="none" />
         </Form.Item>
         <Form.Item
           name={"senha"}
