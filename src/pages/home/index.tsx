@@ -1,4 +1,4 @@
-import { Form, InputNumber, Input, Select, Button, Divider, Space } from "antd";
+import { Form, Input, Select, Button, Divider, Space } from "antd";
 import { SpendCard } from "../../components/SpendCard";
 import Loader from "../../components/Loader";
 import useSWR from "swr";

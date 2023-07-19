@@ -102,6 +102,7 @@ export function AddCategories() {
         );
         return { id: item.id, name: item.categoria, registered: isRegistered };
       })
+      //@ts-ignore
       .sort((a, b) => a.registered - b.registered) || [];
 
   const filteredCategories =
@@ -306,6 +307,7 @@ function CreateCategory({ input, setInput }: { input: string; setInput: any }) {
             api
               .post("/cadastro_categorias_usuario", {
                 token,
+                //@ts-ignore
                 categorias: [{ id: e?.id }],
               })
               .then((e) => {
@@ -315,6 +317,7 @@ function CreateCategory({ input, setInput }: { input: string; setInput: any }) {
               })
               .then((e) => {
                 setInput("");
+                //@ts-ignore
                 toast.success(JSON.stringify(e.message));
               });
           }, 1000);

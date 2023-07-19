@@ -2,7 +2,6 @@ import { Card, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/auth";
 import { deleteLocalStorage, getLocalStorage } from "../../utils/localStorage";
-import { FeedBackModal } from "../../components/FeedBackModal";
 
 export function Profile() {
   const navigate = useNavigate();
