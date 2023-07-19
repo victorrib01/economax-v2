@@ -134,7 +134,7 @@ export function Register() {
           </Space>
         </Form.Item>
       </Form>
-      <p>v 2.0.0</p>
+      <p>v {import.meta.env.VITE_APP_VERSION}</p>
       {contextHolder}
     </div>
   );

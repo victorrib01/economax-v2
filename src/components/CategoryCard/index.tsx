@@ -14,23 +14,24 @@ export function CategoryCard({
   isSelected = false,
   toggleItem,
 }: CategoryCardProps) {
+  const clickable = !item?.registered && toggleItem;
+  const dynamicStyle = {
+    ...(clickable ? { cursor: "pointer" } : {}),
+  };
   return (
     <Card
       key={item.id}
-      style={
-        toggleItem && {
-          cursor: "pointer",
-        }
-      }
+      style={dynamicStyle}
       bodyStyle={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",
         width: "100%",
       }}
-      onClick={() => toggleItem && toggleItem(item)}
+      onClick={clickable ? () => toggleItem(item) : undefined}
     >
       <div style={isSelected ? { color: "blue" } : { color: "black" }}>
+        {item?.registered && `registrado - `}
         {item.name}
       </div>
       {isSelected && <CloseOutlined />}
